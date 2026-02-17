@@ -9,6 +9,7 @@ export default function TaskSnackbar(props: TaskSnackbarProps) {
       <Snackbar
         anchorOrigin={{ vertical, horizontal }}
         open={open}
+        autoHideDuration={5000}
         onClose={props.onClose}
         message={message}
         key={vertical + horizontal}

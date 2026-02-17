@@ -9,6 +9,10 @@ dist/
 dist-ssr
 *.local
 
+#gradle
+.gradle
+gradle/
+
 # Compiled Java class files
 *.class
 

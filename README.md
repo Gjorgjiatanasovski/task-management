@@ -32,7 +32,6 @@ This task was build following the requirements 'Technical Assessment_ Java Full-
 #### Backend part ####
     Built with Java, Spring boot, H2 database, Hibernate and etc...
     For the specific api i didnt add any custom queries to show injection security since the native methods are fully safe and i didnt had any specific functionality to have the opportunity to show more.
-    I dissabled cors for the frontend both dev and prod, with more time i would implement build profiles that separate the two builds
     for error handling, in favor of development time i used exception handlers to sort and sanitize error output, only to be visible to developers
     Jackson config was a bit compromize, unually i configure request mappings to be more strict, in favor of time i dissabled extra values and added wildcard for date mapping (my prefer way vould be pre agreed datetime format) in order to save some time in formatting request on frontend side.
     Tests - i covered few basic scenarios since there isnt any complex business logic.
@@ -43,7 +42,7 @@ This task was build following the requirements 'Technical Assessment_ Java Full-
     Hooks and most states are centralized and shared
     Service is used to communicate with backend and parse responses properly
     Interface types are used everywhere
-    The only compromise here was the tablegrid, its working on client side in favor of time for developemnt.
+    Form typing is bit slow due to the usege of single change handler 
     The endpoints and request models are prepared for all required features like pagination and sorting, but it would take a bit more time to setup.
     End to end test was added following the scenario of adding new Task and checking if its in the table.
 
@@ -57,12 +56,23 @@ password: password
 if there are any issues check 'application.yaml'
 
 database is set to be initialized on every startup
+ddl-auto: create-drop reinitializes the DB on every startup (data is lost on restart)
+to preserve the data on app start change to:
+    jpa->hibernate->
+        ddl-auto: none;
+    sql->init->
+        mode: never
+
+#### CORS ####
+
+Cors is dissabled for localhost for following ports: 3000,5173,5174 when building with gradle with default profile 
+Default profile is always set when building with gradle with no parameters
 
 ## Api structure ##
 
 - localhost:8080
     - /api/v1
-        - /task       
+        - /tasks      
             - [GET]             # list all tasks 
             - [POST]            # save new task
             - [GET]     /{id}   # get task by id

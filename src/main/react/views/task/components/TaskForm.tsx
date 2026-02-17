@@ -4,7 +4,9 @@ import { Dayjs } from 'dayjs';
 import type { TaskFormProps } from '../taskTypes';
 import { useState } from 'react';
 
-export const TaskForm = ({form,setForm,onAdd,onPatch,onClose}:TaskFormProps) => {
+export const TaskForm = ({form,setForm,onAdd,onPatch,onClose,onError,
+  paginationModel, setPaginationModel, setTasks
+}:TaskFormProps) => {
 
   const defaultTitleErrorState = {
     hasError: false,
@@ -13,7 +15,7 @@ export const TaskForm = ({form,setForm,onAdd,onPatch,onClose}:TaskFormProps) => 
 
   const [titleError,setTitleError] = useState(defaultTitleErrorState)
 
-  const handleSubmit = (e: React.SubmitEvent) => {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!form.title) {
       setTitleError({
@@ -28,10 +30,12 @@ export const TaskForm = ({form,setForm,onAdd,onPatch,onClose}:TaskFormProps) => 
       })
       return;
     }
-    if (form.id === "" || form.id === null || form.id === undefined) {
-      onAdd(form);
+    if (form.id === null || form.id === undefined) {
+      onAdd(form,onError);
+      setPaginationModel(paginationModel,setTasks);
     } else {
-      onPatch(form.id, form);
+      onPatch(form.id, form, onError);
+      setPaginationModel(paginationModel,setTasks);
     }
     onClose();
   };
@@ -46,7 +50,6 @@ export const TaskForm = ({form,setForm,onAdd,onPatch,onClose}:TaskFormProps) => 
 
   const handleDateChange = (newValue: Dayjs | null) => {
     setForm({...form, dueDate: newValue});
-    console.log(newValue ? newValue.format('DD-MM-YYYY') : 'No date selected');
   };
 
   const handleCheckedChange = (e: React.ChangeEvent<HTMLInputElement>) => {

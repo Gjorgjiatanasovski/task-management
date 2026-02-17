@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -17,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.atomic.taskmanagement.config.util.OnCreate;
+import com.atomic.taskmanagement.config.util.OnPatch;
 import com.atomic.taskmanagement.domain.task.dto.TaskRequest;
 import com.atomic.taskmanagement.domain.task.dto.TaskResponse;
+
 
 @RestController
 @RequestMapping("/api/v1/tasks")
@@ -31,7 +35,7 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<TaskResponse> createTask(@RequestBody TaskRequest task) {
+    public ResponseEntity<TaskResponse> createTask(@Validated(OnCreate.class) @RequestBody TaskRequest task) {
         return new ResponseEntity<>(taskService.saveTask(task), HttpStatus.CREATED);
     }
 
@@ -42,24 +46,25 @@ public class TaskController {
 
     @GetMapping("/paged")
     public ResponseEntity<Page<TaskResponse>> getTasks(
-        @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) 
+            @PageableDefault(page = 0, size = 10, sort = "id", direction = Sort.Direction.ASC) 
         Pageable pageable) {
     
     return ResponseEntity.ok(taskService.getTasksPaged(pageable));
 }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TaskResponse> getTaskById(@PathVariable Integer id) {
+    public ResponseEntity<TaskResponse> getTaskById(@PathVariable("id") Integer id) {
         return ResponseEntity.ok(taskService.findTaskById(id));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<TaskResponse> updateTask(@PathVariable Integer id, @RequestBody TaskRequest taskDetails) {
+    public ResponseEntity<TaskResponse> updateTask(@PathVariable("id") Integer id,
+            @Validated(OnPatch.class) @RequestBody TaskRequest taskDetails) {
         return ResponseEntity.ok(taskService.updateTask(id, taskDetails));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Integer id) {
+    public ResponseEntity<Void> deleteTask(@PathVariable("id") Integer id) {
         taskService.deleteTask(id);
         return ResponseEntity.noContent().build();
     }

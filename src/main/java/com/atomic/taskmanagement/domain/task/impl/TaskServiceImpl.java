@@ -1,7 +1,6 @@
 package com.atomic.taskmanagement.domain.task.impl;
 
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -17,33 +16,21 @@ import com.atomic.taskmanagement.domain.task.dto.TaskRequest;
 import com.atomic.taskmanagement.domain.task.dto.TaskResponse;
 import com.atomic.taskmanagement.domain.task.util.TaskMapper;
 
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
-import jakarta.validation.Validator;
-
 @Service
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final TaskMapper taskMapper;
     private final MessageSource messageSource;
-    private final Validator validator;
 
     public TaskServiceImpl(TaskRepository taskRepository, 
-            TaskMapper taskMapper, MessageSource messageSource, Validator validator) { 
+            TaskMapper taskMapper, MessageSource messageSource) { 
         this.taskRepository = taskRepository; 
         this.taskMapper = taskMapper;
         this.messageSource = messageSource;
-        this.validator = validator;
     }
 
     @Override
     public TaskResponse saveTask(TaskRequest request) {
-        // Manually trigger validation
-        Set<ConstraintViolation<TaskRequest>> violations = validator.validate(request);
-
-        if (!violations.isEmpty()) {
-            throw new ConstraintViolationException("Constraint violation", violations);
-        }
         Task task = taskMapper.toEntity(request);
         return taskMapper.toResponse(taskRepository.save(task));
     }

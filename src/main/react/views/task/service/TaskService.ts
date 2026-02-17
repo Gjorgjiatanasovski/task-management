@@ -1,5 +1,5 @@
 import axios from 'axios';
-import type { ErrorResponse, SpringPageableRequest, SpringPageableResponse, Task, TaskRequest } from '../taskTypes';
+import { isErrorResponse, isTask, type SpringPageableRequest, type SpringPageableResponse, type Task, type TaskRequest } from '../taskTypes';
 
 const API_URL = 'http://localhost:8080/api/v1/tasks';
 
@@ -18,23 +18,38 @@ export const taskService = {
     });
     return res.data;
   },
-  async create(task: Omit<TaskRequest, 'id'>): Promise<Task | ErrorResponse> {
-    const res = await fetch(API_URL, {
+  async create(task: Omit<TaskRequest, 'id'>,onError: (message: string) => void): Promise<Task | null> {
+    const response = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(task),
     });
-    return res.json();
+    const res = response.clone();
+    if(res.ok && isTask(res.json())) {
+      return res.json();
+    } else if(isErrorResponse(res.json())){
+      onError("error")
+    }
+    return null;
   },
-  async update(id: string, updates: Partial<TaskRequest>): Promise<Task> {
+  async update(id: number, updates: Partial<TaskRequest>,onError: (message: string) => void): Promise<Task | null  > {
     const res = await fetch(`${API_URL}/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates),
-    });
-    return res.json();
+    }).then(response => {
+      return response.clone();
+    })
+
+    if(res.ok && isTask(res.json())) {
+      return res.json();
+    } else if(isErrorResponse(res.json())){
+      onError("error")
+    }
+    return null;
+    
   },
-  async delete(id: string): Promise<void> {
+  async delete(id: number): Promise<void> {
     await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
   }
 };

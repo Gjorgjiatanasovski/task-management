@@ -1,8 +1,9 @@
 import type { SnackbarOrigin } from "@mui/material";
+import type { GridPaginationModel } from "@mui/x-data-grid";
 import type { Dayjs } from "dayjs";
 
 export interface Task {
-  id: string ;
+  id: number | null;
   title: string;
   description: string | null;
   isCompleted: boolean;
@@ -18,7 +19,7 @@ export function isTask(obj: any): obj is Task {
 }
 
 export interface TaskRequest {
-  id: string | null ;
+  id: number | null ;
   title: string;
   description: string | null;
   isCompleted: boolean;
@@ -41,8 +42,8 @@ export function isErrorResponse(obj: any): obj is ErrorResponse {
 }
 
 export interface ValidationError {
-  fieldName: string | null;
-  violation: string | null;
+  fieldName: string;
+  violation: string;
 }
 
 export interface SpringPageableRequest {
@@ -95,27 +96,34 @@ export interface SpringPageable {
 
 export interface TaskProps {
   task: Task;
-  onToggle: (id: string) => void;
-  onEdit: (id: string, data: Partial<Task>) => void;
-  onDelete: (id: string) => void;
+  onToggle: (id: number) => void;
+  onEdit: (id: number, data: Partial<Task>) => void;
+  onDelete: (id: number) => void;
 }
 
 export interface TaskDataGridProps {
   tasks: Task [];
-  onToggle: (id: string) => void;
+  setTasks: (tasks: Task []) => void;
+  onToggle: (id: number, onError: (message: string) => void) => void;
   handleOpenform: (task: Task) => void;
-  onDelete: (id: string) => void;
-  //rowCount: number;
-  //: GridPaginationModel;
-  //setPaginationModel: (paginationData: GridPaginationModel) => void;
+  onDelete: (id: number, onError: (message: string) => void) => void;
+  onError: (message: string) => void;
+  loading: boolean;
+  rowCount: number;
+  paginationModel: GridPaginationModel;
+  setPaginationModel: (paginationData: GridPaginationModel,setTasks: (tasks: Task []) => void) => void;
 }
 
 export interface TaskFormProps {
   form: Task;
   setForm: (task: Task) => void;
-  onAdd: (task: any) => void;
+  onAdd: (task: any, onError: (message: string) => void) => void;
   onClose: () => void;
-  onPatch: (id: string, data: Task) => void;
+  onPatch: (id: number, data: Task, onError: (message: string) => void) => void;
+  onError: (message: string) => void;
+  setTasks: (tasks: Task []) => void;
+  paginationModel: GridPaginationModel;
+  setPaginationModel: (paginationData: GridPaginationModel,setTasks: (tasks: Task []) => void) => void;
 }
 
 export interface TaskSnackbarProps {

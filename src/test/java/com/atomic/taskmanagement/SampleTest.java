@@ -1,4 +1,4 @@
-package com.casumo.videorental;
+package com.atomic.taskmanagement;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;

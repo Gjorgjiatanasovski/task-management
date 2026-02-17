@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test('should add a new entry to the table after form submission', async ({ page }) => {
   // 1. Navigate to your local Vite dev server
-  await page.goto('localhost:5174/');
+  await page.goto('http://localhost:5173/');
 
   // 2. Click the "Add User" button to open the form/modal
   await page.getByRole('button', { name: /add/i }).click();

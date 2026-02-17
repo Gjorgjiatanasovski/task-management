@@ -44,7 +44,6 @@ task myNodeTask(type: NpmTask) {
   args = ['run', 'dev']
 }
 
-
 dependencies {
     annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
     annotationProcessor "org.projectlombok:lombok:1.18.32"

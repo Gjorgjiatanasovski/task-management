@@ -1,4 +1,4 @@
-import { DataGrid,type GridColDef, type GridRenderCellParams } from '@mui/x-data-grid';
+import { DataGrid,type GridColDef, type GridPaginationModel, type GridRenderCellParams } from '@mui/x-data-grid';
 import { IconButton, Stack, Checkbox } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -7,26 +7,30 @@ import dayjs from 'dayjs';
 
 // 1. Define the Task Interface
 
-export default function TaskDataGrid({tasks,onToggle,handleOpenform,onDelete}:TaskDataGridProps) {
+export default function TaskDataGrid({tasks,setTasks,onToggle,handleOpenform,onDelete,onError,
+  loading, rowCount, paginationModel, setPaginationModel }:TaskDataGridProps) {
 
   // 2. Define Action Handlers
-  const handleDelete = (id: string) => {
-    onDelete(id);
+  const handleDelete = (id: number) => {
+    onDelete(id,onError);
+    setPaginationModel(paginationModel,setTasks);
   };
 
-  const handleToggle = (id: string) => {
-    onToggle(id);
+  const handleToggle = (id: number) => {
+    onToggle(id, onError);
+    setPaginationModel(paginationModel,setTasks);
   }
 
-  const handleEdit = (id: string) => {
+  const handleEdit = (id: number) => {
     console.log("Edit task:", id);
     const task = tasks.find(t => t.id === id);
     if (!task) return;
-
-    
     handleOpenform({...task,dueDate:dayjs(task.dueDate)});
   };
 
+  const handlePaginationChange= (paginationData: GridPaginationModel) => {
+    setPaginationModel(paginationData,setTasks);
+  }
 
 
   // 3. Define Columns
@@ -67,10 +71,15 @@ export default function TaskDataGrid({tasks,onToggle,handleOpenform,onDelete}:Ta
       <DataGrid 
         rows={tasks}
         columns={columns} 
-        pageSizeOptions={[5, 10]}
+        pageSizeOptions={[5]}
         initialState={{
           pagination: { paginationModel: { pageSize: 5 } },
         }}
+        loading={loading}
+        rowCount={rowCount}
+        paginationMode='server'
+        paginationModel={paginationModel}
+        onPaginationModelChange={handlePaginationChange}
         disableRowSelectionOnClick 
       />
     </div>
